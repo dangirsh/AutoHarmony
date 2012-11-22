@@ -7,6 +7,7 @@ import org.puredata.android.io.AudioParameters;
 import org.puredata.android.io.PdAudio;
 import org.puredata.android.utils.PdUiDispatcher;
 import org.puredata.core.PdBase;
+import org.puredata.core.PdListener;
 import org.puredata.core.utils.IoUtils;
 
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class GuitarTunerActivity extends Activity implements OnClickListener {
 	}
 
 	private void initGui() {
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.main);
 		eButton = (Button) findViewById(R.id.e_button);
 		eButton.setOnClickListener(this);
 		aButton = (Button) findViewById(R.id.a_button);
@@ -57,8 +58,18 @@ public class GuitarTunerActivity extends Activity implements OnClickListener {
 		// Configure the audio glue
 		int sampleRate = AudioParameters.suggestSampleRate();
 		PdAudio.initAudio(sampleRate, 0, 2, 8, true);
-		// Create and install the dispatcher dispatcher = new PdUiDispatcher();
-		// PdBase.setReceiver(dispatcher);
+		PdAudio.initAudio(sampleRate, 1, 2, 8, true);
+		// Create and install the dispatcher 
+		dispatcher = new PdUiDispatcher();
+		PdBase.setReceiver(dispatcher);
+		dispatcher.addListener("pitch", new PdListener.Adapter() {
+			@Override
+			public void receiveFloat(String source, float x) { 
+				Log.i(TAG, "pitch: " + x);
+			} 
+		}
+		);
+		
 	}
 
 	private void loadPatch() throws IOException {
