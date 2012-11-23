@@ -32,11 +32,14 @@ public class Helpers {
 	public static int[] getIntervals(Scale.Type type) {
 		switch (type) {
 		case MAJOR:
-			int[] majorIntervals = { 2, 2, 1, 2, 2, 2, 1 };
+			int[] majorIntervals = { 2, 2, 1, 2, 2, 2 };
 			return majorIntervals;
 		case MINOR:
-			int[] minorIntervals = { 2, 1, 2, 2, 1, 2, 2 };
+			int[] minorIntervals = { 2, 1, 2, 2, 1, 2 };
 			return minorIntervals;
+		case CHROMATIC:
+			int[] chromaticIntervals = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+			return chromaticIntervals;
 		default:
 			return null;
 		}

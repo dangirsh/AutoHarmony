@@ -8,7 +8,7 @@ import com.example.harmonizer.music.Note.Name;
 
 public class Scale{
 
-	public enum Type { MAJOR, MINOR };
+	public enum Type { MAJOR, MINOR, CHROMATIC };
 	
 	private Note.Name baseNote;
 	private Scale.Type type;
@@ -36,13 +36,18 @@ public class Scale{
 		return notes;
 	}
 	
+	// 0 indexed
+	public Note.Name getNthNote(int n){
+		return notes.get(n);
+	}
+	
 	public Scale.Type getType(){
 		return type;
 	}
 	
 	@Override
 	public String toString(){
-		return this.getBaseNote().name();
+		return this.getBaseNote().name() + " " + this.type.name();
 	}
 	
 }
