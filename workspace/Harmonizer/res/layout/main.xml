@@ -4,7 +4,14 @@
 	android:layout_height="fill_parent">
 
     <TextView
-        android:id="@+id/pitch_label"
+        android:id="@+id/lead_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/harmony_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"

@@ -7,7 +7,7 @@ import com.example.harmonizer.music.Scale;
 public class Helpers {
 
 	// Use fact that Midi 21 = A0
-	public static Note MidiToNote(int midiVal) throws MidiTooLowException {
+	public static Note midiToNote(int midiVal) throws MidiTooLowException {
 		int octave = 0;
 		Note.Name name;
 		if (midiVal >= 24) {
