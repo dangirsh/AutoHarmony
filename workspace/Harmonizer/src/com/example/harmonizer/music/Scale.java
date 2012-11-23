@@ -54,4 +54,13 @@ public class Scale{
 		return this.getBaseNote().name() + " " + this.type.name();
 	}
 	
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof Scale){
+			Scale otherScale = (Scale) o;
+			return this.notes.equals(otherScale.getNotes());
+		}
+		return false;
+	}
+	
 }

@@ -37,5 +37,9 @@ public class HarmonyBuilder {
 	public void setKey(Key argKey){
 		key = argKey;
 	}
+
+	public Style getStyle() {
+		return style;
+	}
 	
 }

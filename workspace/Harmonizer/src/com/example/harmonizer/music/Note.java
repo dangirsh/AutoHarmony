@@ -17,6 +17,10 @@ public class Note {
 		octave = argOctave;
 		name = argName;
 	}
+	
+	public static int compareNames(Note.Name name1, Note.Name name2){
+		return name1.name().compareTo(name2.name());
+	}
 
 	public int getOctave() {
 		return octave;

@@ -20,13 +20,15 @@ public class Key {
 		int counter = 0;
 		while(octave < MAX_OCTAVES){
 			Note.Name noteName = scale.getNthNote(counter);
-			// next octave if we hit the next C;
-			if(noteName.equals(Note.Name.C)){
-				octave++;
-			}
 			notes.add(new Note(noteName, octave));
 			// roll over scale counter if necessary
 			counter = (counter + 1) % scale.getNumNotes();
+			// next octave if we passed the next C;
+			Note.Name nextNoteName = scale.getNthNote(counter);
+			if( (Note.compareNames(nextNoteName, Note.Name.C) >= 0) &&
+					(Note.compareNames(noteName, Note.Name.C) < 0)){
+				octave++;
+			}
 		}
 	}
 	
@@ -46,8 +48,18 @@ public class Key {
 		}
 	}
 	
+	@Override
 	public String toString(){
 		return scale.toString();
+	}
+
+	@Override 
+	public boolean equals(Object o){
+		if(o instanceof Key){
+			Key otherKey = (Key) o;
+			return otherKey.scale.equals(this.scale);
+		}
+		return false;
 	}
 	
 }
