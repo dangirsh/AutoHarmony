@@ -36,6 +36,10 @@ public class Scale{
 		return notes;
 	}
 	
+	public int getNumNotes(){
+		return notes.size();
+	}
+	
 	// 0 indexed
 	public Note.Name getNthNote(int n){
 		return notes.get(n);

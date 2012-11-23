@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.harmonizer.music.Note.Name;
+
 
 public class Key {
 
@@ -14,13 +16,17 @@ public class Key {
 	
 	public Key(Scale argScale){
 		scale = argScale;
-		List<Note.Name> noteNames = scale.getNotes();
-		for(int octave = 0; octave < MAX_OCTAVES; octave++){
-			List<Note> octaveNotes = new ArrayList<Note>();
-			for(Note.Name name : noteNames){
-				octaveNotes.add(new Note(name, octave));
+		int octave = 0;
+		int counter = 0;
+		while(octave < MAX_OCTAVES){
+			Note.Name noteName = scale.getNthNote(counter);
+			// next octave if we hit the next C;
+			if(noteName.equals(Note.Name.C)){
+				octave++;
 			}
-			notes.addAll(octaveNotes);
+			notes.add(new Note(noteName, octave));
+			// roll over scale counter if necessary
+			counter = (counter + 1) % scale.getNumNotes();
 		}
 	}
 	
