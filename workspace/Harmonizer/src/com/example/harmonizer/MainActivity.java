@@ -108,7 +108,12 @@ public class MainActivity extends Activity{
 		List<Note> harmony = harmonyBuilder.buildHarmony(lead);
 		String harmonyString = "";
 		for(Note n : harmony){
-			harmonyString += n.toString();
+			if(n != null){
+				harmonyString += n.toString();
+			}
+			else{
+				harmonyString += "null";
+			}
 		}
 		harmonyLabel.setText("Harmony: " + harmonyString);
 		

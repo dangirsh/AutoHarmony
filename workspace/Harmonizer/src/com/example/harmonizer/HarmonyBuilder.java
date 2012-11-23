@@ -14,6 +14,7 @@ public class HarmonyBuilder {
 	public HarmonyBuilder(Key argKey, Style argStyle){
 		key = argKey;
 		style = argStyle;
+		history = new History();
 	}
 	
 	// will be called from the main activity at some fixed interval
