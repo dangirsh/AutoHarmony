@@ -6,6 +6,11 @@ public class Helpers {
 		//TODO
 		return null;
 	}
+
+	public static int[] getIntervals(Scale.Type argType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	
