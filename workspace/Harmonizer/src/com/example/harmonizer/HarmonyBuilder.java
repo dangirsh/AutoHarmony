@@ -1,10 +1,10 @@
 package com.example.harmonizer;
 
-public class HarmonyBuilder {
+public abstract class HarmonyBuilder {
 
-	private Key key;
+	public Key key;
 	
-	public HarmonyBuilder(Key argKey){
+	public void setKey(Key argKey){
 		key = argKey;
 	}
 	

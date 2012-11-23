@@ -3,8 +3,8 @@ package com.example.harmonizer;
 public class Note {
 
 	//order matters
-	public enum Name {
-		A, As, B, C, Cs, D, Ds, E, F, Fs, G, Gs
+	public static enum Name {
+		C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B
 	}
 	
 	//maybe change to enum length

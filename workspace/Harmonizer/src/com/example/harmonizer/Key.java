@@ -7,7 +7,7 @@ import java.util.List;
 public class Key {
 
 	private List<Note> notes = new ArrayList<Note>();
-	private static final int MAX_OCTAVES = 10;
+	private static final int MAX_OCTAVES = 8;
 	
 	private Scale scale;
 	
@@ -24,7 +24,7 @@ public class Key {
 	}
 	
 	//Maybe make an Interval class and use it here
-	public Note getNote(Note start, int numHalfSteps){
+	public Note getNote(Note start, int numHalfSteps) throws OutOfRangeException, OutOfKeyException{
 		int index = notes.indexOf(start);
 		if(index > 0){
 			int otherIndex = index + numHalfSteps;
