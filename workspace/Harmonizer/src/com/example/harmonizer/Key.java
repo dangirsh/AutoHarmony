@@ -14,7 +14,7 @@ public class Key {
 	public Key(Scale argScale){
 		scale = argScale;
 		List<Note.Name> noteNames = scale.getNotes();
-		for(int octave = 1; octave <= MAX_OCTAVES; octave++){
+		for(int octave = 0; octave < MAX_OCTAVES; octave++){
 			List<Note> octaveNotes = new ArrayList<Note>();
 			for(Note.Name name : noteNames){
 				octaveNotes.add(new Note(name, octave));
