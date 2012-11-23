@@ -1,29 +1,25 @@
 package com.example.harmonizer.test;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.example.harmonizer.music.Key;
 import com.example.harmonizer.music.Note;
 import com.example.harmonizer.music.OutOfKeyException;
 import com.example.harmonizer.music.OutOfRangeException;
 import com.example.harmonizer.music.Scale;
 
-public class KeyTest {
+import junit.framework.TestCase;
+
+public class KeyTest extends TestCase {
 
 	Key key;
 	
-	@Before
 	public void setUp() throws Exception {
+		System.out.println("asfd");
 		Note.Name baseNote = Note.Name.C;
 		Scale.Type type = Scale.Type.MAJOR;
 		Scale scale = new Scale(baseNote, type);
 		key = new Key(scale);
 	}
 
-	@Test
 	public void testGetNote() {
 		Note C4 = new Note(Note.Name.C, 4);
 		Note D4 = new Note(Note.Name.D, 4);
@@ -63,9 +59,8 @@ public class KeyTest {
 		}
 	}
 
-	@Test
 	public void testToString() {
 		assertTrue(key.toString().toLowerCase().equals("c major"));
 	}
-
+	
 }
