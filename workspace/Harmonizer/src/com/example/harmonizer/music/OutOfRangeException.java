@@ -1,4 +1,4 @@
-package com.example.harmonizer;
+package com.example.harmonizer.music;
 
 public class OutOfRangeException extends Exception {
 

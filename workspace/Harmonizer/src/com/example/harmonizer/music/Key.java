@@ -1,8 +1,9 @@
-package com.example.harmonizer;
+package com.example.harmonizer.music;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class Key {
 
@@ -23,16 +24,15 @@ public class Key {
 		}
 	}
 	
-	//Maybe make an Interval class and use it here
-	public Note getNote(Note start, int numHalfSteps) throws OutOfRangeException, OutOfKeyException{
+	public Note getNote(Note start, int numSteps) throws OutOfRangeException, OutOfKeyException{
 		int index = notes.indexOf(start);
 		if(index > 0){
-			int otherIndex = index + numHalfSteps;
+			int otherIndex = index + numSteps;
 			if(otherIndex < notes.size()){
 				return notes.get(otherIndex);
 			}
 			else{
-				throw new OutOfRangeException(this, start, numHalfSteps);
+				throw new OutOfRangeException(this, start, numSteps);
 			}
 		}
 		else{

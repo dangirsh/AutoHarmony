@@ -1,5 +1,9 @@
 package com.example.harmonizer;
 
+import com.example.harmonizer.music.MidiTooLowException;
+import com.example.harmonizer.music.Note;
+import com.example.harmonizer.music.Scale;
+
 public class Helpers {
 
 	// Use fact that Midi 21 = A0
