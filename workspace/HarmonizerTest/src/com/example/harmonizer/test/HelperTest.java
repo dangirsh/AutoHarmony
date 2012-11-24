@@ -8,35 +8,46 @@ import junit.framework.TestCase;
 
 public class HelperTest extends TestCase {
 
-	public void testMidiToNote() {
+	public void testNoteToMidi() {
 		try {
-			assertTrue(isEqual(21, Note.Name.A, 0));
-			assertTrue(isEqual(35, Note.Name.B, 1));
-			assertTrue(isEqual(69, Note.Name.A, 4));
-			assertTrue(isEqual(100, Note.Name.E, 7));
-			assertTrue(isEqual(108, Note.Name.C, 8));
-			assertTrue(isEqual(94, Note.Name.As, 6));
+			assertTrue(midiIsEqual(21, Note.Name.A, 0));
+			assertTrue(midiIsEqual(35, Note.Name.B, 1));
+			assertTrue(midiIsEqual(69, Note.Name.A, 4));
+			assertTrue(midiIsEqual(100, Note.Name.E, 7));
+			assertTrue(midiIsEqual(108, Note.Name.C, 8));
+			assertTrue(midiIsEqual(94, Note.Name.As, 6));
 		} catch (MidiTooLowException e) {
 			e.printStackTrace();
 		}
-		
-		//test too low exception cases
+	}
+	
+	public void testMidiToNote() {
 		try {
-			assertTrue(isEqual(20, Note.Name.A, 0));
-			fail();
-		} catch (MidiTooLowException e) { //should happen
+			assertTrue(midiIsEqual(21, Note.Name.A, 0));
+			assertTrue(midiIsEqual(35, Note.Name.B, 1));
+			assertTrue(midiIsEqual(69, Note.Name.A, 4));
+			assertTrue(midiIsEqual(100, Note.Name.E, 7));
+			assertTrue(midiIsEqual(108, Note.Name.C, 8));
+			assertTrue(midiIsEqual(94, Note.Name.As, 6));
+		} catch (MidiTooLowException e) {
+			e.printStackTrace();
 		}
-		
+	
 		try {
-			assertTrue(isEqual(-1, Note.Name.A, 0));
+			assertTrue(midiIsEqual(-1, Note.Name.A, 0));
 			fail();
 		} catch (MidiTooLowException e) { //should happen
 		}
 	}
 	
-	private boolean isEqual(int midiVal, Note.Name noteName, int octave) throws MidiTooLowException{
+	private boolean midiIsEqual(int midiVal, Note.Name noteName, int octave) throws MidiTooLowException{
 		Note note = new Note(noteName, octave);
 		return Helpers.midiToNote(midiVal).equals(note);
+	}
+	
+	private boolean noteIsEqual(int midiVal, Note.Name noteName, int octave) throws MidiTooLowException{
+		Note note = new Note(noteName, octave);
+		return (Helpers.noteToMidi(note) == midiVal);
 	}
 
 }

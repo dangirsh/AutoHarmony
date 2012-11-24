@@ -198,7 +198,7 @@ public class MainActivity extends Activity {
 				try {
 					n = Helpers.midiToNote((int) x);
 					leadValueLabel.setText(n.toString());
-					sendToHarmonyBuilder(x);
+					harmonize(x);
 				} catch (MidiTooLowException e) {
 					//e.printStackTrace();
 				}
@@ -213,14 +213,17 @@ public class MainActivity extends Activity {
 		harmonyBuilder = new HarmonyBuilder(key, style); 
 	}
 	
-	public void sendToHarmonyBuilder(float midiVal){
+	public void harmonize(float midiVal){
 		Note lead = null;
 		try {
 			lead = Helpers.midiToNote((int) midiVal);
 			List<Note> harmony = harmonyBuilder.buildHarmony(lead);
 			String harmonyString = "";
-			for(Note n : harmony){
+			for(int i = 0; i < harmony.size(); i++){
+				Note n = harmony.get(i);
 				if(n != null){
+					float harmonyMidiVal = Helpers.noteToMidi(n);
+					PdBase.sendFloat("voice"+i, harmonyMidiVal); //play the harmony
 					harmonyString += n.toString() + ", ";
 				}
 			}

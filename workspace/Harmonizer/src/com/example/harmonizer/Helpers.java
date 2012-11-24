@@ -8,23 +8,13 @@ public class Helpers {
 
 	// Use fact that Midi 21 = A0
 	public static Note midiToNote(int midiVal) throws MidiTooLowException {
-		int octave = 0;
-		Note.Name name;
-		if (midiVal >= 24) {
-			int offset = (midiVal - 24);
-			octave = 1 + (offset / 12);
-			int ordinal = offset % 12;
-			name = Note.Name.values()[ordinal];
-		} else if (midiVal == 21) {
-			name = Note.Name.A;
-		} else if (midiVal == 22) {
-			name = Note.Name.As;
-		} else if (midiVal == 23) {
-			name = Note.Name.B;
-		} else{
+		int octave = (midiVal / 12) - 1;
+		if(octave < 0){
 			throw new MidiTooLowException(midiVal);
 		}
-		return new Note(name, octave);
+		int ordinal = midiVal % 12;
+		Note.Name noteName = Note.Name.values()[ordinal];
+		return new Note(noteName, octave);
 	}
 
 	public static int[] getIntervals(Scale.Type type) {
@@ -66,6 +56,18 @@ public class Helpers {
 			return null; //TODO: change to throw exception
 		}
 			
+	}
+
+	public static float noteToMidi(Note n) throws MidiTooLowException {
+		int octave = n.getOctave();
+		int ordinal = n.getName().ordinal();
+		int midiVal = ((octave + 1) * 12) + ordinal;
+		if(midiVal > 0){
+			return (float) midiVal;
+		}
+		else{
+			throw new MidiTooLowException(midiVal);
+		}
 	}
 
 }
