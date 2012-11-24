@@ -178,7 +178,7 @@ public class MainActivity extends Activity {
 			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 				float msecPerBeat = Helpers.bpmToMspb(newVal);
 				Log.e("msecpbeat", ""+msecPerBeat);
-				PdBase.sendFloat("msecptick", msecPerBeat);
+				PdBase.sendFloat("msecpbeat", msecPerBeat);
 			}
 		});
 	}	
