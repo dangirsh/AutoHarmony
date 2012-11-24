@@ -5,7 +5,7 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string-array name="keys">
+    <string-array name="notes">
         <item>C</item>
         <item>Cs</item>
         <item>D</item>
@@ -17,6 +17,12 @@
         <item>Gs</item>
         <item>As</item>
         <item>B</item>
+    </string-array>
+    
+    <string-array name="scales">
+        <item>Major</item>
+        <item>Minor</item>
+        <item>Chromatic</item>
     </string-array>
     
     <string-array name="styles">

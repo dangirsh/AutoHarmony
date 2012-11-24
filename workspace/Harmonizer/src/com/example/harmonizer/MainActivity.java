@@ -24,21 +24,16 @@ import com.example.harmonizer.music.Scale;
 
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,14 +43,13 @@ public class MainActivity extends Activity {
 
 	private static final String TAG = "GuitarTuner";
 	private PdUiDispatcher dispatcher;
-	
+	private PdService pdService = null;
+
 	private TextView leadValueLabel;
 	private TextView harmonyValueLabel;
 	
 	private HarmonyBuilder harmonyBuilder;
 
-
-	private PdService pdService = null;
 
 	private final ServiceConnection pdConnection = new ServiceConnection() {
 		@Override
@@ -95,7 +89,8 @@ public class MainActivity extends Activity {
 		leadValueLabel = (TextView) findViewById(R.id.lead_pitch_value);
 		harmonyValueLabel = (TextView) findViewById(R.id.harmony_value);
 		initStyleChooser();
-		initKeyChooser();
+		initNoteChooser();
+		initScaleChooser();
 		initBpmChooser();
 	}
 	
@@ -107,10 +102,10 @@ public class MainActivity extends Activity {
 		styleChooser.setAdapter(adapter);
 		styleChooser.setOnItemSelectedListener(new OnItemSelectedListener(){
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				
+			public void onItemSelected(AdapterView<?> parent, View arg1,
+					int pos, long arg3) {
+				String styleString = parent.getItemAtPosition(pos).toString();
+				Log.e("style", styleString);
 			}
 			
 			@Override
@@ -122,24 +117,42 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	private void initKeyChooser(){
-		Spinner keyChooser = (Spinner) findViewById(R.id.key_chooser);
+	private void initNoteChooser(){
+		Spinner noteChooser = (Spinner) findViewById(R.id.note_chooser);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-		        R.array.keys, android.R.layout.simple_spinner_item);
+		        R.array.notes, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		keyChooser.setAdapter(adapter);
-		keyChooser.setOnItemSelectedListener(new OnItemSelectedListener(){
+		noteChooser.setAdapter(adapter);
+		noteChooser.setOnItemSelectedListener(new OnItemSelectedListener(){
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				
+			public void onItemSelected(AdapterView<?> parent, View arg1,
+					int pos, long arg3) {
+				String noteString = parent.getItemAtPosition(pos).toString();
+				Log.e("note", noteString);
 			}
 			
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-				
+			public void onNothingSelected(AdapterView<?> arg0) {				
+			}
+		});
+	}
+	
+	private void initScaleChooser(){
+		Spinner scaleChooser = (Spinner) findViewById(R.id.scale_chooser);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        R.array.scales, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		scaleChooser.setAdapter(adapter);
+		scaleChooser.setOnItemSelectedListener(new OnItemSelectedListener(){
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View arg1,
+					int pos, long arg3) {
+				String scaleString = parent.getItemAtPosition(pos).toString();
+				Log.e("scale", scaleString);
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {				
 			}
 		});
 	}
@@ -167,6 +180,7 @@ public class MainActivity extends Activity {
 		dispatcher.addListener("pitch", new PdListener.Adapter() {
 			@Override
 			public void receiveFloat(String source, final float x) {
+				Log.e("pitch", ""+x);
 				leadValueLabel.setText(""+x);
 				sendToHarmonyBuilder(x);
 			}
