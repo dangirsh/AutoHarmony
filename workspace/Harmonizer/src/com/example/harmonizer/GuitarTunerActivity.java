@@ -72,7 +72,6 @@ public class GuitarTunerActivity extends Activity{
 		button.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Log.e("Butt", "on");
 				PdBase.sendBang("grab_pitch");
 			}
 		});
