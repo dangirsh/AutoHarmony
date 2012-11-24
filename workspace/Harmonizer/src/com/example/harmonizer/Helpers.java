@@ -49,4 +49,23 @@ public class Helpers {
 		return (float) (1000.0 / bps);
 	}
 
+	public static Style strToStyle(String styleString) {
+		if(styleString.equals("Major Triad")){
+			return new MajorTriadStyle();
+		}
+		else if(styleString.equals("Medieval")){
+			return new MedievalStyle();
+		}
+		else if(styleString.equals("Tritone")){
+			return new TritoneStyle();
+		}
+		else if(styleString.equals("Barbershop")){
+			return new BarbershopStyle();
+		}
+		else{
+			return null; //TODO: change to throw exception
+		}
+			
+	}
+
 }

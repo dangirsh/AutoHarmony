@@ -20,6 +20,7 @@ import org.puredata.core.utils.IoUtils;
 import com.example.harmonizer.music.Key;
 import com.example.harmonizer.music.MidiTooLowException;
 import com.example.harmonizer.music.Note;
+import com.example.harmonizer.music.Note.Name;
 import com.example.harmonizer.music.Scale;
 
 import android.app.Activity;
@@ -50,14 +51,12 @@ public class MainActivity extends Activity {
 	
 	private HarmonyBuilder harmonyBuilder;
 
-
 	private final ServiceConnection pdConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			pdService = ((PdService.PdBinder)service).getService();
 			try {
 				initPd();
-				initHarmonyBuilder();
 				loadPatch();
 			} catch (IOException e) {
 				Log.e(TAG, e.toString());
@@ -66,15 +65,14 @@ public class MainActivity extends Activity {
 		}
 
 		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			// this method will never be called
-		}
+		public void onServiceDisconnected(ComponentName name) {}
 	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initGui();
+		initHarmonyBuilder();
 		bindService(new Intent(this, PdService.class), pdConnection, BIND_AUTO_CREATE);
 	}
 
@@ -106,6 +104,8 @@ public class MainActivity extends Activity {
 					int pos, long arg3) {
 				String styleString = parent.getItemAtPosition(pos).toString();
 				Log.e("style", styleString);
+				Style newStyle = Helpers.strToStyle(styleString);
+				harmonyBuilder.setStyle(newStyle);
 			}
 			
 			@Override
@@ -129,6 +129,12 @@ public class MainActivity extends Activity {
 					int pos, long arg3) {
 				String noteString = parent.getItemAtPosition(pos).toString();
 				Log.e("note", noteString);
+				Note.Name newBaseNote = Note.Name.valueOf(noteString);
+				Key key = harmonyBuilder.getKey();
+				Scale scale = key.getScale();
+				Scale newScale = new Scale(newBaseNote, scale.getType());
+				Key newKey = new Key(newScale);
+				harmonyBuilder.setKey(newKey);
 			}
 			
 			@Override
@@ -147,8 +153,14 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View arg1,
 					int pos, long arg3) {
-				String scaleString = parent.getItemAtPosition(pos).toString();
-				Log.e("scale", scaleString);
+				String scaleTypeString = parent.getItemAtPosition(pos).toString();
+				Log.e("scaletype", scaleTypeString);
+				Scale.Type newScaleType = Scale.Type.valueOf(scaleTypeString.toUpperCase());
+				Key key = harmonyBuilder.getKey();
+				Scale scale = key.getScale();
+				Scale newScale = new Scale(scale.getBaseNote(), newScaleType);
+				Key newKey = new Key(newScale);
+				harmonyBuilder.setKey(newKey);
 			}
 			
 			@Override
@@ -165,7 +177,8 @@ public class MainActivity extends Activity {
 			@Override
 			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 				float msecPerBeat = Helpers.bpmToMspb(newVal);
-				PdBase.sendFloat("bpm", msecPerBeat);
+				Log.e("msecpbeat", ""+msecPerBeat);
+				PdBase.sendFloat("msecptick", msecPerBeat);
 			}
 		});
 	}	
@@ -181,8 +194,14 @@ public class MainActivity extends Activity {
 			@Override
 			public void receiveFloat(String source, final float x) {
 				Log.e("pitch", ""+x);
-				leadValueLabel.setText(""+x);
-				sendToHarmonyBuilder(x);
+				Note n;
+				try {
+					n = Helpers.midiToNote((int) x);
+					leadValueLabel.setText(n.toString());
+					sendToHarmonyBuilder(x);
+				} catch (MidiTooLowException e) {
+					//e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -198,10 +217,6 @@ public class MainActivity extends Activity {
 		Note lead = null;
 		try {
 			lead = Helpers.midiToNote((int) midiVal);
-		} catch (MidiTooLowException e) {
-			//e.printStackTrace();
-		}
-		if(lead != null){
 			List<Note> harmony = harmonyBuilder.buildHarmony(lead);
 			String harmonyString = "";
 			for(Note n : harmony){
@@ -211,8 +226,8 @@ public class MainActivity extends Activity {
 			}
 			harmonyValueLabel.setText(harmonyString);
 		}
-		else{
-			Log.e("NULLLEAD", (new Float(midiVal)).toString());
+		catch (MidiTooLowException e) {
+			//e.printStackTrace();
 		}
 		
 	}

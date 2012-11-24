@@ -10,7 +10,7 @@ public class Key {
 	private static final int MAX_OCTAVES = 8;
 	
 	private Scale scale;
-	
+
 	public Key(Scale argScale){
 		scale = argScale;
 		int octave = 0;
@@ -43,6 +43,10 @@ public class Key {
 		else{
 			throw new OutOfKeyException(this, start);
 		}
+	}
+
+	public Scale getScale() {
+		return scale;
 	}
 	
 	@Override
