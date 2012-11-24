@@ -27,8 +27,6 @@ public class Helpers {
 		return new Note(name, octave);
 	}
 
-	// update this if an Interval class is written. currently returns half step
-	// counts.
 	public static int[] getIntervals(Scale.Type type) {
 		switch (type) {
 		case MAJOR:
@@ -43,6 +41,12 @@ public class Helpers {
 		default:
 			return null;
 		}
+	}
+
+	// beats per minute -> milliseconds per beat
+	public static float bpmToMspb(int bpm) {
+		double bps = bpm / 60.0;
+		return (float) (1000.0 / bps);
 	}
 
 }

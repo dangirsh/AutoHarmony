@@ -1,3 +1,8 @@
+/**
+ * Sample code for "Making Musical Apps" by Peter Brinkmann
+ * http://shop.oreilly.com/product/0636920022503.do
+ */
+
 package com.example.harmonizer;
 
 import java.io.File;
@@ -17,39 +22,45 @@ import com.example.harmonizer.music.MidiTooLowException;
 import com.example.harmonizer.music.Note;
 import com.example.harmonizer.music.Scale;
 
-import android.os.Bundle;
-import android.os.IBinder;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.NumberPicker;
-import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.NumberPicker.OnValueChangeListener;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
-	private static final String TAG = "Harmonizer";
+	private static final String TAG = "GuitarTuner";
 	private PdUiDispatcher dispatcher;
+	
+	private TextView leadValueLabel;
+	private TextView harmonyValueLabel;
+	
+	private HarmonyBuilder harmonyBuilder;
+
 
 	private PdService pdService = null;
-	private TextView leadValueLabel;
-
-	private HarmonyBuilder harmonyBuilder;
-	private TextView harmonyValueLabel;
 
 	private final ServiceConnection pdConnection = new ServiceConnection() {
-
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			pdService = ((PdService.PdBinder) service).getService();
+			pdService = ((PdService.PdBinder)service).getService();
 			try {
 				initPd();
 				initHarmonyBuilder();
@@ -70,8 +81,13 @@ public class MainActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initGui();
-		bindService(new Intent(this, PdService.class), pdConnection,
-				BIND_AUTO_CREATE);
+		bindService(new Intent(this, PdService.class), pdConnection, BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		unbindService(pdConnection);
 	}
 
 	private void initGui() {
@@ -81,13 +97,6 @@ public class MainActivity extends Activity{
 		initStyleChooser();
 		initKeyChooser();
 		initBpmChooser();
-		Button button = (Button) findViewById(R.id.button1);
-		button.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				PdBase.sendBang("grab_pitch");
-			}
-		});
 	}
 	
 	private void initStyleChooser(){
@@ -96,6 +105,21 @@ public class MainActivity extends Activity{
 		        R.array.styles, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		styleChooser.setAdapter(adapter);
+		styleChooser.setOnItemSelectedListener(new OnItemSelectedListener(){
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 
 	private void initKeyChooser(){
@@ -104,6 +128,20 @@ public class MainActivity extends Activity{
 		        R.array.keys, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		keyChooser.setAdapter(adapter);
+		keyChooser.setOnItemSelectedListener(new OnItemSelectedListener(){
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 	
 	private void initBpmChooser(){
@@ -113,15 +151,15 @@ public class MainActivity extends Activity{
 		bpmChooser.setOnValueChangedListener(new OnValueChangeListener() {
 			@Override
 			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-				PdBase.sendFloat("bpm", newVal);
+				float msecPerBeat = Helpers.bpmToMspb(newVal);
+				PdBase.sendFloat("bpm", msecPerBeat);
 			}
 		});
-	}
+	}	
 	
-	private void initPd() throws IOException {
+	private void  initPd() throws IOException {
 		// Configure the audio glue
 		int sampleRate = AudioParameters.suggestSampleRate();
-		// Create and install the dispatcher
 		pdService.initAudio(sampleRate, 1, 2, 10.0f);
 		pdService.startAudio();
 		dispatcher = new PdUiDispatcher();
@@ -133,16 +171,15 @@ public class MainActivity extends Activity{
 				sendToHarmonyBuilder(x);
 			}
 		});
-
 	}
-	
+
 	public void initHarmonyBuilder(){
 		Scale scale = new Scale(Note.Name.C, Scale.Type.MAJOR);
 		Key key = new Key(scale);
 		Style style = new MajorTriadStyle();
 		harmonyBuilder = new HarmonyBuilder(key, style); 
 	}
-
+	
 	public void sendToHarmonyBuilder(float midiVal){
 		Note lead = null;
 		try {
@@ -166,7 +203,6 @@ public class MainActivity extends Activity{
 		
 	}
 	
-	
 	private void loadPatch() throws IOException {	
 		Resources res = getResources();
 		File patchFile = null;
@@ -181,11 +217,4 @@ public class MainActivity extends Activity{
 			if (patchFile != null) patchFile.delete();
 		}
 	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		unbindService(pdConnection);
-	}
-
 }
