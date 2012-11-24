@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.harmonizer.Helpers;
-import com.example.harmonizer.music.Note.Name;
 
 public class Scale{
 

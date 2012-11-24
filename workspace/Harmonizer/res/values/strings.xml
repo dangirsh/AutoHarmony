@@ -5,4 +5,25 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
+    <string-array name="keys">
+        <item>C</item>
+        <item>Cs</item>
+        <item>D</item>
+        <item>Ds</item>
+        <item>E</item>
+        <item>F</item>
+        <item>Fs</item>
+        <item>G</item>
+        <item>Gs</item>
+        <item>As</item>
+        <item>B</item>
+    </string-array>
+    
+    <string-array name="styles">
+        <item>Major Triad</item>
+        <item>Medieval</item>
+        <item>Tritone</item>
+        <item>Barbershop</item>
+    </string-array>
+    
 </resources>

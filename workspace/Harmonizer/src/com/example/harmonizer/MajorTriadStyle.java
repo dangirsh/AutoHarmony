@@ -8,7 +8,7 @@ import com.example.harmonizer.music.Note;
 import com.example.harmonizer.music.OutOfKeyException;
 import com.example.harmonizer.music.OutOfRangeException;
 
-public class SimpleStyle extends Style {
+public class MajorTriadStyle extends Style {
 
 	@Override
 	/*
@@ -40,9 +40,9 @@ public class SimpleStyle extends Style {
 			voiceOne = key.getNote(lead, 2);
 			voiceTwo = key.getNote(lead, 4);
 		} catch (OutOfRangeException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (OutOfKeyException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		List<Note> harmony = new ArrayList<Note>();
 		harmony.add(voiceOne);

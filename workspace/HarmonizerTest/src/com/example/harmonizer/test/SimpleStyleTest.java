@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.example.harmonizer.History;
-import com.example.harmonizer.SimpleStyle;
+import com.example.harmonizer.MajorTriadStyle;
 import com.example.harmonizer.Style;
 import com.example.harmonizer.music.Key;
 import com.example.harmonizer.music.Note;
@@ -16,8 +16,8 @@ public class SimpleStyleTest extends TestCase {
 
 	Scale scale = new Scale(Note.Name.C, Scale.Type.MAJOR);
 	Key key = new Key(scale);
-	History history = new History(); //not used by SimpleStyle
-	Style simpleStyle = new SimpleStyle();
+	History history = new History(); //not used by MajorTriadStyle
+	Style simpleStyle = new MajorTriadStyle();
 	
 	public void testHarmonize() {
 		// test with lead = middle c

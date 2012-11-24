@@ -25,6 +25,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class MainActivity extends Activity{
@@ -33,10 +36,10 @@ public class MainActivity extends Activity{
 	private PdUiDispatcher dispatcher;
 
 	private PdService pdService = null;
-	private TextView leadLabel;
+	private TextView leadValueLabel;
 
 	private HarmonyBuilder harmonyBuilder;
-	private TextView harmonyLabel;
+	private TextView harmonyValueLabel;
 
 	private final ServiceConnection pdConnection = new ServiceConnection() {
 
@@ -69,10 +72,35 @@ public class MainActivity extends Activity{
 
 	private void initGui() {
 		setContentView(R.layout.main);
-		leadLabel = (TextView) findViewById(R.id.lead_label);
-		harmonyLabel = (TextView) findViewById(R.id.harmony_label);
+		leadValueLabel = (TextView) findViewById(R.id.lead_pitch_value);
+		harmonyValueLabel = (TextView) findViewById(R.id.harmony_value);
+		initStyleChooser();
+		initKeyChooser();
+		initBpmChooser();
+	}
+	
+	private void initStyleChooser(){
+		Spinner styleChooser = (Spinner) findViewById(R.id.style_chooser);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        R.array.styles, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		styleChooser.setAdapter(adapter);
 	}
 
+	private void initKeyChooser(){
+		Spinner keyChooser = (Spinner) findViewById(R.id.key_chooser);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        R.array.keys, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		keyChooser.setAdapter(adapter);
+	}
+	
+	private void initBpmChooser(){
+		NumberPicker bpm_chooser = (NumberPicker) findViewById(R.id.bmp_picker);
+		bpm_chooser.setMaxValue(300);
+		bpm_chooser.setMinValue(30);
+	}
+	
 	private void initPd() throws IOException {
 		// Configure the audio glue
 		int sampleRate = AudioParameters.suggestSampleRate();
@@ -84,7 +112,7 @@ public class MainActivity extends Activity{
 		dispatcher.addListener("pitch", new PdListener.Adapter() {
 			@Override
 			public void receiveFloat(String source, final float x) {
-				leadLabel.setText("Pitch: " + x);
+				leadValueLabel.setText(""+x);
 				sendToHarmonyBuilder(x);
 			}
 		});
@@ -94,7 +122,7 @@ public class MainActivity extends Activity{
 	public void initHarmonyBuilder(){
 		Scale scale = new Scale(Note.Name.C, Scale.Type.MAJOR);
 		Key key = new Key(scale);
-		Style style = new SimpleStyle();
+		Style style = new MajorTriadStyle();
 		harmonyBuilder = new HarmonyBuilder(key, style); 
 	}
 
@@ -103,19 +131,21 @@ public class MainActivity extends Activity{
 		try {
 			lead = Helpers.midiToNote((int) midiVal);
 		} catch (MidiTooLowException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
-		List<Note> harmony = harmonyBuilder.buildHarmony(lead);
-		String harmonyString = "";
-		for(Note n : harmony){
-			if(n != null){
-				harmonyString += n.toString();
+		if(lead != null){
+			List<Note> harmony = harmonyBuilder.buildHarmony(lead);
+			String harmonyString = "";
+			for(Note n : harmony){
+				if(n != null){
+					harmonyString += n.toString() + ", ";
+				}
 			}
-			else{
-				harmonyString += "null";
-			}
+			harmonyValueLabel.setText(harmonyString);
 		}
-		harmonyLabel.setText("Harmony: " + harmonyString);
+		else{
+			Log.e("NULLLEAD", (new Float(midiVal)).toString());
+		}
 		
 	}
 	

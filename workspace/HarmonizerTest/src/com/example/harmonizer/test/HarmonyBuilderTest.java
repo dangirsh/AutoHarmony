@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.example.harmonizer.HarmonyBuilder;
-import com.example.harmonizer.SimpleStyle;
+import com.example.harmonizer.MajorTriadStyle;
 import com.example.harmonizer.Style;
 import com.example.harmonizer.music.Key;
 import com.example.harmonizer.music.Note;
@@ -18,7 +18,7 @@ public class HarmonyBuilderTest extends TestCase {
 
 	private Scale scale = new Scale(Note.Name.C, Scale.Type.MAJOR);
 	private Key key = new Key(scale);
-	private Style style = new SimpleStyle();
+	private Style style = new MajorTriadStyle();
 	private HarmonyBuilder harmonyBuilder = new HarmonyBuilder(key, style);
 
 	public void testBuildHarmony() {
@@ -50,7 +50,7 @@ public class HarmonyBuilderTest extends TestCase {
 
 	// TODO: update with different style class
 	public void testSetStyle() {
-		Style newStyle = new SimpleStyle();
+		Style newStyle = new MajorTriadStyle();
 		harmonyBuilder.setStyle(newStyle);
 		assertTrue(harmonyBuilder.getStyle().equals(newStyle));
 		//reset to old val

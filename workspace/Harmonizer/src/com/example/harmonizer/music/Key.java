@@ -1,10 +1,7 @@
 package com.example.harmonizer.music;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import com.example.harmonizer.music.Note.Name;
 
 
 public class Key {
