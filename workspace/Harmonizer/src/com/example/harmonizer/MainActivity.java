@@ -25,8 +25,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -77,6 +81,13 @@ public class MainActivity extends Activity{
 		initStyleChooser();
 		initKeyChooser();
 		initBpmChooser();
+		Button button = (Button) findViewById(R.id.button1);
+		button.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				PdBase.sendBang("grab_pitch");
+			}
+		});
 	}
 	
 	private void initStyleChooser(){
@@ -96,9 +107,15 @@ public class MainActivity extends Activity{
 	}
 	
 	private void initBpmChooser(){
-		NumberPicker bpm_chooser = (NumberPicker) findViewById(R.id.bmp_picker);
-		bpm_chooser.setMaxValue(300);
-		bpm_chooser.setMinValue(30);
+		NumberPicker bpmChooser = (NumberPicker) findViewById(R.id.bmp_picker);
+		bpmChooser.setMaxValue(300);
+		bpmChooser.setMinValue(30);
+		bpmChooser.setOnValueChangedListener(new OnValueChangeListener() {
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+				PdBase.sendFloat("bpm", newVal);
+			}
+		});
 	}
 	
 	private void initPd() throws IOException {
@@ -154,8 +171,8 @@ public class MainActivity extends Activity{
 		Resources res = getResources();
 		File patchFile = null;
 		try {
-			InputStream in = res.openRawResource(R.raw.tuner);
-			patchFile = IoUtils.extractResource(in, "tuner.pd", getCacheDir());
+			InputStream in = res.openRawResource(R.raw.main);
+			patchFile = IoUtils.extractResource(in, "main.pd", getCacheDir());
 			PdBase.openPatch(patchFile);
 		} catch (IOException e) {
 			Log.e(TAG, e.toString());
