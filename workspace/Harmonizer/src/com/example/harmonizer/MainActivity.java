@@ -30,11 +30,15 @@ import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -50,7 +54,10 @@ public class MainActivity extends Activity {
 	private TextView harmonyValueLabel;
 	
 	private HarmonyBuilder harmonyBuilder;
-
+	
+	private String debugStr;
+	private float debugVal;
+	
 	private final ServiceConnection pdConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
@@ -59,7 +66,7 @@ public class MainActivity extends Activity {
 				initPd();
 				loadPatch();
 			} catch (IOException e) {
-				Log.e(TAG, e.toString());
+				//Log.e(TAG, e.toString());
 				finish();
 			}
 		}
@@ -90,6 +97,68 @@ public class MainActivity extends Activity {
 		initNoteChooser();
 		initScaleChooser();
 		initBpmChooser();
+		initDebug();
+	}
+	
+	private void initDebug() {
+		Spinner debugKey = (Spinner) findViewById(R.id.debug_key);
+		NumberPicker debugValPicker = (NumberPicker) findViewById(R.id.debug_val);
+		Button debugSend = (Button) findViewById(R.id.sendDebug);
+		EditText debugFloat = (EditText) findViewById(R.id.debugFloat);
+		
+		// debug key spinner
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        R.array.debug, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		debugKey.setAdapter(adapter);
+		debugKey.setOnItemSelectedListener(new OnItemSelectedListener(){
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View arg1,
+					int pos, long arg3) {
+				debugStr = parent.getItemAtPosition(pos).toString();
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		//debug val picker
+		debugValPicker.setMaxValue(300);
+		debugValPicker.setMinValue(0);
+		debugValPicker.setOnValueChangedListener(new OnValueChangeListener() {
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+				debugVal = newVal;
+			}
+		});
+		
+		//debug val edit text
+		debugFloat.addTextChangedListener(new TextWatcher(){
+	        public void afterTextChanged(Editable s) {
+	            try{
+	            		debugVal = Float.valueOf(s.toString());
+	            }
+	            catch(Exception e){
+	            	
+	            }
+	        }
+	        public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+	        public void onTextChanged(CharSequence s, int start, int before, int count){}
+		}
+		);
+		
+		//send button
+		debugSend.setOnClickListener(new Button.OnClickListener() {
+		    public void onClick(View v) {
+		    		Log.e(debugStr, ""+debugVal);
+	            PdBase.sendFloat(debugStr, debugVal);
+		    }
+		});
+		
 	}
 	
 	private void initStyleChooser(){
@@ -103,7 +172,7 @@ public class MainActivity extends Activity {
 			public void onItemSelected(AdapterView<?> parent, View arg1,
 					int pos, long arg3) {
 				String styleString = parent.getItemAtPosition(pos).toString();
-				Log.e("style", styleString);
+				//Log.e("style", styleString);
 				Style newStyle = Helpers.strToStyle(styleString);
 				harmonyBuilder.setStyle(newStyle);
 			}
@@ -128,7 +197,7 @@ public class MainActivity extends Activity {
 			public void onItemSelected(AdapterView<?> parent, View arg1,
 					int pos, long arg3) {
 				String noteString = parent.getItemAtPosition(pos).toString();
-				Log.e("note", noteString);
+				//Log.e("note", noteString);
 				Note.Name newBaseNote = Note.Name.valueOf(noteString);
 				Key key = harmonyBuilder.getKey();
 				Scale scale = key.getScale();
@@ -154,7 +223,7 @@ public class MainActivity extends Activity {
 			public void onItemSelected(AdapterView<?> parent, View arg1,
 					int pos, long arg3) {
 				String scaleTypeString = parent.getItemAtPosition(pos).toString();
-				Log.e("scaletype", scaleTypeString);
+				//Log.e("scaletype", scaleTypeString);
 				Scale.Type newScaleType = Scale.Type.valueOf(scaleTypeString.toUpperCase());
 				Key key = harmonyBuilder.getKey();
 				Scale scale = key.getScale();
@@ -170,17 +239,17 @@ public class MainActivity extends Activity {
 	}
 	
 	private void initBpmChooser(){
-		NumberPicker bpmChooser = (NumberPicker) findViewById(R.id.bmp_picker);
-		bpmChooser.setMaxValue(300);
-		bpmChooser.setMinValue(30);
-		bpmChooser.setOnValueChangedListener(new OnValueChangeListener() {
-			@Override
-			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-				float msecPerBeat = Helpers.bpmToMspb(newVal);
-				Log.e("msecpbeat", ""+msecPerBeat);
-				PdBase.sendFloat("msecpbeat", msecPerBeat);
-			}
-		});
+//		NumberPicker bpmChooser = (NumberPicker) findViewById(R.id.bmp_picker);
+//		bpmChooser.setMaxValue(300);
+//		bpmChooser.setMinValue(30);
+//		bpmChooser.setOnValueChangedListener(new OnValueChangeListener() {
+//			@Override
+//			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//				float msecPerBeat = Helpers.bpmToMspb(newVal);
+//				Log.e("msecpbeat", ""+msecPerBeat);
+//				PdBase.sendFloat("msecpbeat", msecPerBeat);
+//			}
+//		});
 	}	
 	
 	private void  initPd() throws IOException {
@@ -193,7 +262,7 @@ public class MainActivity extends Activity {
 		dispatcher.addListener("pitch", new PdListener.Adapter() {
 			@Override
 			public void receiveFloat(String source, final float x) {
-				Log.e("pitch", ""+x);
+				//Log.e("pitch", ""+x);
 				Note n;
 				try {
 					n = Helpers.midiToNote((int) x);
@@ -243,7 +312,7 @@ public class MainActivity extends Activity {
 			patchFile = IoUtils.extractResource(in, "main.pd", getCacheDir());
 			PdBase.openPatch(patchFile);
 		} catch (IOException e) {
-			Log.e(TAG, e.toString());
+			//Log.e(TAG, e.toString());
 			finish();
 		} finally {
 			if (patchFile != null) patchFile.delete();

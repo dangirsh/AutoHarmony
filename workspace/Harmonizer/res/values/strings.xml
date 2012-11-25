@@ -5,6 +5,17 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
+    <string-array name="debug">
+        <item>window</item>
+        <item>delay</item>
+        <item>center</item>
+        <item>q</item>
+        <item>threshold</item>
+        <item>attack</item>
+        <item>hold</item>
+        <item>decay</item>
+    </string-array>
+    
     <string-array name="notes">
         <item>C</item>
         <item>Cs</item>
@@ -15,6 +26,7 @@
         <item>Fs</item>
         <item>G</item>
         <item>Gs</item>
+        <item>A</item>
         <item>As</item>
         <item>B</item>
     </string-array>
