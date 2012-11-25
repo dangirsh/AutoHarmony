@@ -6,10 +6,10 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string-array name="debug">
-        <item>upper</item>
-        <item>lower</item>
-        <item>reverb</item>
+        <item>center</item>
+        <item>q</item>
         <item>window</item>
+        <item>reverb</item>
     </string-array>
     
     <string-array name="notes">
