@@ -28,12 +28,17 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -52,11 +57,23 @@ public class MainActivity extends Activity {
 
 	private TextView leadValueLabel;
 	private TextView harmonyValueLabel;
+	private Button recordButton = null;
+    private Button playButton = null;
 	
 	private HarmonyBuilder harmonyBuilder;
 	
 	private String debugStr;
 	private float debugVal;
+
+    private static String mFileName = null;
+    private MediaRecorder mRecorder = null;
+    private MediaPlayer mPlayer = null;    
+    boolean mStartPlaying = true;
+    boolean mStartRecording = true; 
+    boolean somethingRecorded = false;
+    
+    private OnCompletionListener playComplete;
+	
 	
 	private final ServiceConnection pdConnection = new ServiceConnection() {
 		@Override
@@ -86,6 +103,15 @@ public class MainActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		if (mRecorder != null) {
+            mRecorder.release();
+            mRecorder = null;
+        }
+
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+        }
 		unbindService(pdConnection);
 	}
 
@@ -159,6 +185,50 @@ public class MainActivity extends Activity {
 		    }
 		});
 		
+	}
+
+	private void initControls(){
+		mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName += "/recording.3gp";
+    		mStartPlaying = true;
+        mStartRecording = true;
+    		recordButton = (Button) findViewById(R.id.record_button);
+	    	playButton = (Button) findViewById(R.id.play_button);
+	  
+	    OnClickListener recClick = new OnClickListener() {
+	        public void onClick(View v) {
+	            onRecord(mStartRecording);
+	            if (mStartRecording) {
+	            		recordButton.setText("Stop");
+	            } else {
+	            		recordButton.setText("Record");
+	            }
+	            mStartRecording = !mStartRecording;
+	        }
+	    };
+
+	    OnClickListener playClick = new OnClickListener() {
+	        public void onClick(View v) {
+	            onPlay(mStartPlaying);
+	            if (mStartPlaying) {
+	                playButton.setText("End preview");
+	            } else {
+	                playButton.setText("Preview");
+	            }
+	            mStartPlaying = !mStartPlaying;
+	        }
+	    };  
+	    
+	    playComplete = new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer arg0) {
+				playButton.setText("Preview");
+				mStartPlaying = true;
+			}
+	    };
+	   
+	    recordButton.setOnClickListener(recClick);
+	    playButton.setOnClickListener(playClick);
 	}
 	
 	private void initStyleChooser(){
@@ -318,4 +388,60 @@ public class MainActivity extends Activity {
 			if (patchFile != null) patchFile.delete();
 		}
 	}
+	
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    private void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
+
+    private void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.setOnCompletionListener(playComplete);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
+    }
+
+    private void startRecording() {
+    		somethingRecorded = true;
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+
+        mRecorder.start();
+    }
+
+    private void stopRecording() {
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
+    }
 }
